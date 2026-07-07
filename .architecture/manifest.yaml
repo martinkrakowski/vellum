@@ -287,6 +287,9 @@ bounded_contexts:
       testing the state machine without a live R3F canvas.
     depends_on:
       - shared
+      - scene-orchestration
+      - correction-delta
+      - texture-generation
     uiFramework: Next.js
     apiFramework: Express
     layers:
