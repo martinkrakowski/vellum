@@ -470,6 +470,8 @@ bounded_contexts:
       component tree.
     depends_on:
       - shared
+      - scene-orchestration
+      - asset-loader
     uiFramework: Next.js
     apiFramework: Express
     layers:

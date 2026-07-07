@@ -1980,11 +1980,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/asset-loader@workspace:packages/asset-loader":
+"@vellum/asset-loader@workspace:*, @vellum/asset-loader@workspace:packages/asset-loader":
   version: 0.0.0-use.local
   resolution: "@vellum/asset-loader@workspace:packages/asset-loader"
   dependencies:
+    "@types/three": "npm:^0.185.0"
+    "@vellum/scene-types": "workspace:*"
     "@vellum/shared": "workspace:*"
+    three: "npm:^0.185.1"
     typescript: "npm:^5.0.0"
     vitest: "npm:^4.1.9"
   languageName: unknown
@@ -2006,6 +2009,7 @@ __metadata:
   resolution: "@vellum/camera-control@workspace:packages/camera-control"
   dependencies:
     "@vellum/shared": "workspace:*"
+    camera-controls: "npm:^3.1.2"
     typescript: "npm:^5.0.0"
     vitest: "npm:^4.1.9"
   languageName: unknown
@@ -2084,7 +2088,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@vellum/scene-export@workspace:packages/scene-export"
   dependencies:
+    "@types/three": "npm:^0.185.0"
+    "@vellum/scene-types": "workspace:*"
     "@vellum/shared": "workspace:*"
+    three: "npm:^0.185.1"
     typescript: "npm:^5.0.0"
     vitest: "npm:^4.1.9"
   languageName: unknown
@@ -2106,7 +2113,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@vellum/scene-port@workspace:packages/scene-port"
   dependencies:
+    "@types/three": "npm:^0.185.0"
+    "@vellum/asset-loader": "workspace:*"
+    "@vellum/scene-orchestration": "workspace:*"
+    "@vellum/scene-types": "workspace:*"
     "@vellum/shared": "workspace:*"
+    three: "npm:^0.185.1"
     typescript: "npm:^5.0.0"
     vitest: "npm:^4.1.9"
   languageName: unknown
