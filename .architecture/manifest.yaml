@@ -1,0 +1,536 @@
+schemaVersion: 1
+system: vellum
+scope: '@vellum'
+architecture: modular-monolith
+workspaceTemplate: modular-monolith
+monorepo:
+  packageManager: yarn@4.12.0
+  linker: node-modules
+  buildTool: turbo
+  workspaces:
+    - apps/*
+    - packages/*
+  workspaceDefaults:
+    tsConfig:
+      extends: ../../tsconfig.base.json
+      compilerOptions:
+        rootDir: src
+        outDir: dist
+        composite: true
+        declaration: true
+        emitDeclarationOnly: true
+        declarationMap: true
+        tsBuildInfoFile: ./dist/.tsbuildinfo
+    packageJson:
+      scripts:
+        build: tsc
+        lint: eslint src --ext .ts,.tsx
+        typecheck: tsc --noEmit
+      devDependencies:
+        typescript: ^5.5.4
+        eslint: ^9.0.0
+        '@typescript-eslint/parser': ^8.0.0
+        '@typescript-eslint/eslint-plugin': ^8.0.0
+  turboConfig:
+    globalDependencies:
+      - '**/.env.*'
+    pipeline:
+      build:
+        dependsOn:
+          - ^build
+        outputs:
+          - dist/**
+      lint:
+        dependsOn:
+          - ^build
+      test:
+        dependsOn:
+          - ^build
+      typecheck:
+        outputs: []
+        cache: true
+generator:
+  version: 0.2.0
+  sync:
+    idempotent: true
+    createOnlyIfMissing: true
+    nonDestructive: true
+    layers:
+      domain:
+        folder: src/domain
+        subfolders:
+          - entities
+          - value_objects
+      application:
+        folder: src/application
+        subfolders:
+          - use-cases
+          - ports/in
+          - ports/out
+      infrastructure:
+        folder: src/infrastructure
+        subfolders:
+          - adapters
+    packageJson:
+      mergeStrategy: preserveExisting
+      injectIfMissing:
+        scripts:
+          build: tsc
+          lint: eslint src --ext .ts,.tsx
+          typecheck: tsc --noEmit
+    stubs:
+      enabled: true
+    apps:
+      enabled: true
+apps:
+  - name: web
+    framework: next.js
+    depends_on: &ref_0
+      - asset-loader
+      - audit-governance
+      - camera-control
+      - correction-delta
+      - distortion-detection
+      - feedback-domain
+      - pipeline-simulation
+      - review-dashboard
+      - review-lifecycle
+      - scene-export
+      - scene-orchestration
+      - scene-port
+      - scene-renderer
+      - scene-types
+      - split-view
+      - texture-generation
+  - name: api
+    framework: nitro
+    depends_on: *ref_0
+bounded_contexts:
+  - name: shared
+    type: shared-kernel
+    description: Shared primitives, custom errors, base classes, utilities
+    depends_on: []
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects:
+          - CustomError
+          - Identifier
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters:
+          - Prisma.adapter.ts
+          - BullMQ.adapter.ts
+  - name: scene-types
+    type: core
+    description: >-
+      Single source of truth for all cross-context contracts. Contains Zod
+      schemas and inferred TypeScript types. No runtime logic; type-only imports
+      permitted in any plane without restriction.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
+  - name: correction-delta
+    type: core
+    description: >-
+      Pure function module. Defines the CATEGORY_CORRECTIONS table that maps
+      each FeedbackCategory to a deterministic TextureTransform delta. Category
+      must produce an observable, testable change in the next iteration — not
+      decoration. applyCorrectionDelta merges the previous config with the delta
+      to produce the attempt-N+1 SceneConfig.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
+  - name: scene-orchestration
+    type: core
+    description: >-
+      Owns the primary state machine — the control flow that sequences every
+      user action and pipeline execution. Implements a pure reducer (zero
+      framework dependency) over MachineContext. Calls exclusively through
+      ScenePort and PipelinePort — never imports Three.js or React. The reducer
+      is the architectural seam that Adobe should be able to read and trace
+      without knowing anything about R3F or Next.js.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out:
+            - document-db.out-port.ts
+      infrastructure:
+        adapters: []
+  - name: review-lifecycle
+    type: core
+    description: >-
+      Encodes the iteration data model that travels with every state transition.
+      buildIteration() is a pure factory that constructs a SceneIteration from
+      the current MachineContext and a resolved SceneConfig. The iteration array
+      in MachineContext is the append-only ledger that becomes the AuditTrail on
+      export.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out:
+            - relational-db.out-port.ts
+      infrastructure:
+        adapters: []
+  - name: feedback-domain
+    type: core
+    description: >-
+      Domain rules for feedback categorisation. Validates that a FeedbackPayload
+      category maps to a known correction behaviour before the state machine
+      accepts a REJECT transition. Two categories ship for the demo:
+      UV_DISTORTION (produces observable transform delta) and OTHER (texture-
+      only re-run, no transform change). Categories are the demo's primary
+      claim: that category affects behaviour, not just label.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
+  - name: audit-governance
+    type: core
+    description: >-
+      Synthesises the AuditTrail from the completed MachineContext on Approve.
+      The AuditTrail is the governance artifact — designed as an ADR-style
+      document, not a debug log. brandGuidelinesVersion signals which version of
+      the brand rules was active during generation, an enterprise concern absent
+      from competitor tooling. Delegates binary export to ExportPort.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out:
+            - relational-db.out-port.ts
+      infrastructure:
+        adapters: []
+  - name: pipeline-simulation
+    type: core
+    description: >-
+      Implements PipelinePort with deterministic mocked behaviour. Emits typed
+      PipelineStep events from inside the promise chain — not from independent
+      timeouts — so the stepper UI never desyncs from actual scene state. The
+      mock simulates the four steps with calibrated delays that match the pitch
+      script narration timing (total ~5.3s). Provides MockSceneAdapter for
+      testing the state machine without a live R3F canvas.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
+  - name: texture-generation
+    type: core
+    description: >-
+      Implements TextureGenerationPort. In the demo, MockTextureAdapter returns
+      pre-baked asset URLs with attempt-keyed filenames (label-attempt-1.png,
+      label-attempt-2.png) to avoid Three.js TextureLoader cache collisions.
+      Cache-busting query param (?t=Date.now()) applied as belt-and-suspenders.
+      FireflyTextureAdapter is the production seam — stub only for demo.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
+  - name: distortion-detection
+    type: core
+    description: >-
+      Client-side UV distortion heuristic. After texture application, samples
+      pixel density at the bevel UV island and the front-face UV island using a
+      browser canvas. Emits distortionWarning: true when stretchRatio > 1.3. The
+      warning drives a subtle amber indicator in the review dashboard before the
+      human orbits to the problem angle. Turns the system from passive viewer
+      into active guardrail — the architectural claim that 2D review cannot
+      make.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out:
+            - external-service-client.out-port.ts
+      infrastructure:
+        adapters: []
+  - name: scene-renderer
+    type: core
+    description: >-
+      React Three Fiber canvas host. Owns the material ref lifecycle via the
+      initialize(refs) adapter pattern — materialRef is populated by the
+      ThreeJsSceneAdapter during GLB load (node.name === 'LabelMesh' traversal),
+      not from declarative JSX. SceneInitializer is a zero-render child of
+      Canvas that calls useThree() and passes gl + scene to the adapter's
+      initialize() method. Consumes ScenePort only — never calls pipeline or
+      domain logic directly.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
+  - name: split-view
+    type: core
+    description: >-
+      Side-by-side panel. Left: raw AI-generated texture PNG at full resolution
+      (exactly what the mock generation produced). Right: 3D R3F canvas with the
+      same texture applied to the mesh geometry. The left panel updates on every
+      re-run to show the corrected flat version. The contrast between the two
+      panes is the demo's primary argument — no narration required.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
+  - name: review-dashboard
+    type: core
+    description: >-
+      Primary HITL surface. Hosts the split-view, the pipeline stepper, the
+      approve/reject CTA bar, the feedback modal, and the iteration history
+      sidebar. Reads exclusively from MachineContext — no local state for
+      governance-relevant data. The distortionWarning amber badge is placed in
+      the bottom-left of the 3D pane. The maxRetriesReached state renders an
+      explicit message with a 'Start New Session' CTA.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
+  - name: camera-control
+    type: core
+    description: >-
+      Wraps @react-three/drei CameraControls (not OrbitControls) to enable
+      smooth programmatic camera movement during re-generation. The
+      re-generation sequence disables user input, tweens back to the hero
+      position, begins slow autoRotate, then re-enables controls after
+      configure() resolves. CameraControls exposes lerpLookAt and setLookAt with
+      built-in damping — necessary for the non-jarring camera reset during the
+      rejection demo path.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
+  - name: scene-port
+    type: core
+    description: >-
+      ThreeJsSceneAdapter — the primary implementation of ScenePort. Owns the
+      two-phase configure() logic internally via a modelLoaded flag so the state
+      machine never distinguishes first-load from texture-swap. Holds a minimal
+      typed event emitter (15-line inline, no Node.js EventEmitter dependency —
+      EventEmitter is not available in the browser without a webpack polyfill).
+      Initialized via initialize(refs) called from SceneInitializer inside the
+      Canvas boundary — the only safe way to hold a React ref from outside the
+      component tree.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out:
+            - external-service-client.out-port.ts
+      infrastructure:
+        adapters: []
+  - name: asset-loader
+    type: core
+    description: >-
+      Implements AssetPort. Wraps GLTFLoader and THREE.TextureLoader with
+      explicit cache-busting semantics and colorspace enforcement. Texture URLs
+      are always suffixed with ?t=Date.now(). All loaded textures receive
+      colorSpace = THREE.SRGBColorSpace. Models are served from
+      /public/assets/models/ via Vercel edge (static assets — no cold start
+      risk). Textures from /public/assets/textures/ with distinct attempt-keyed
+      filenames.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out:
+            - external-service-client.out-port.ts
+      infrastructure:
+        adapters: []
+  - name: scene-export
+    type: core
+    description: >-
+      Implements ExportPort. Primary path: GLTFExporter with
+      renderer.initTexture() pre-call and one-frame buffer before material
+      assignment. Fallback path (activated if GLTFExporter texture embedding
+      proves unreliable in testing): AuditTrail JSON + canvas.toBlob()
+      screenshot. The JSON is the governance artifact that carries the audit
+      case; the GLB is supplementary. Export button is only rendered in the
+      'approved' terminal state.
+    depends_on:
+      - shared
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out:
+            - external-service-client.out-port.ts
+      infrastructure:
+        adapters: []

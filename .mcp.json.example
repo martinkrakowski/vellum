@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "vellum": {
+      "command": "npx",
+      "args": ["tsx", "bin/cli.ts"]
+    }
+  }
+}
