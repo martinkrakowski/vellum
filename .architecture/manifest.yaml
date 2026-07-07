@@ -185,6 +185,7 @@ bounded_contexts:
       without knowing anything about R3F or Next.js.
     depends_on:
       - shared
+      - review-lifecycle
     uiFramework: Next.js
     apiFramework: Express
     layers:
