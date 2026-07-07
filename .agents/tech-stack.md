@@ -12,6 +12,8 @@ if it is not here (or is in "Never Suggest"), do not introduce it without asking
 | TypeScript    | Language      | `strict: true`. No `any` — narrow or use `unknown`. |
 | Vitest        | Test runner   | `vitest run`; `import { describe, it } from "vitest"`. |
 | node:assert / `expect()` | Assertions | `node:assert/strict` or Vitest's `expect()` — either is fine. |
+| Zod           | Schema validation | Env validation today; `scene-types` contracts (schemas + inferred types) from phase 4. |
+| clsx + tailwind-merge | Class composition | Only via the `cn()` helper in `apps/web/src/lib/cn.ts`. |
 
 > Keep this table accurate. When you add a dependency (or a Hexagen template
 > adds one), add its row here in the same change — a stale stack reference is

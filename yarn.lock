@@ -2954,7 +2954,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.28.0":
+"esbuild@npm:^0.28.0, esbuild@npm:~0.28.0":
   version: 0.28.1
   resolution: "esbuild@npm:0.28.1"
   dependencies:
@@ -5748,6 +5748,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsx@npm:^4.19.0":
+  version: 4.23.0
+  resolution: "tsx@npm:4.23.0"
+  dependencies:
+    esbuild: "npm:~0.28.0"
+    fsevents: "npm:~2.3.3"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: 10c0/e4fade6bf8a4447424652da3a68f5ab7b927d1cbe5f697dba876c626c5fb7bf7663c4f71777992c9cbbdc8148c63ee1ddcf15536ff9d1863f9fbea25247ee0a9
+  languageName: node
+  linkType: hard
+
 "turbo@npm:^2.0.0":
   version: 2.10.4
   resolution: "turbo@npm:2.10.4"
@@ -6133,6 +6148,7 @@ __metadata:
     "@hexagen-monaco/sync": "npm:^0.8.0"
     eslint: "npm:^9.0.0"
     prettier: "npm:^3.0.0"
+    tsx: "npm:^4.19.0"
     turbo: "npm:^2.0.0"
     typescript: "npm:^5.5.4"
   languageName: unknown
