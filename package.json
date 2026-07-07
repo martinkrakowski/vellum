@@ -21,13 +21,15 @@
     "lint:arch": "hexagen arch validate",
     "templates:add": "hexagen add",
     "templates:validate": "hexagen validate-templates",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check:env": "tsx scripts/check-env.ts"
   },
   "devDependencies": {
     "@hexagen-monaco/arch-linter": "^0.8.0",
     "@hexagen-monaco/sync": "^0.8.0",
     "eslint": "^9.0.0",
     "prettier": "^3.0.0",
+    "tsx": "^4.19.0",
     "turbo": "^2.0.0",
     "typescript": "^5.5.4"
   }

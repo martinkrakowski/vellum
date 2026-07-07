@@ -10,7 +10,7 @@ import { readFileSync, readdirSync } from "node:fs";
  *
  * Required vars must have a non-empty value in .env.local (or the process
  * environment). Exits 1 if any are missing, so it can gate a demo, CI run, or
- * deploy. Run with: npm run check:env
+ * deploy. Run with: yarn check:env
  *
  * Requiredness is explicit (the annotation), NOT inferred from an empty value —
  * many templates ship optional, intentionally-empty placeholders (e.g. one API
