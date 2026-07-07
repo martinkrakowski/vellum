@@ -55,3 +55,21 @@ To keep this file out of version control, add `.agents/session-log.md` to
   - Everything in the plan: Phase 1 (lint stubs, exports, turbo.json) is the next session's starting point
   - `yarn lint` currently red in 7 packages (empty generated port-stub interfaces) — known, planned
   - Bottle GLB asset is the longest-lead item; start early
+
+---
+
+## 2026-07-06 (later) — phases 1–5 executed, MVP live, stacked PRs #6–#10
+
+- **Mode:** Implementer
+- **Changes:**
+  - Phase 1–3 (PRs #6–#8): lint green, source exports (JIT) + transpilePackages, turbo outputs, orphan template code deleted, design system relocated to apps/web, docs aligned
+  - Phase 4 (PR #9): full MVP — scene-types Zod contracts, correction-delta, feedback/lifecycle/audit domain, pure reducer + runGeneration, mock pipeline (5.3s), transform-aware distortion heuristic, parametric bottle (~1.49 stretch ratio), ThreeJsSceneAdapter, R3F canvas, split view, dashboard, composition root, generated label textures
+  - Phase 5 (PR #10): live browser dry-run; fixes: GLB export targets bottle group only (ContactShadows RT texture broke GLTFExporter), hero camera pulled back; docs/demo-runbook.md
+- **Decisions:**
+  - Distortion warning is transform-aware (geometric ratio ÷ repeatX/repeatY) so the UV_DISTORTION correction measurably clears it — the demo's payoff
+  - Hand-maintained barrels must NOT carry the `@generated` header or sync rewrites them from its *.adapter.ts convention
+  - `yarn workspace X lint` fails (yarn 4 exposes only declared deps' binaries; generator omitted eslint devDeps) — always gate through turbo
+- **Left open:**
+  - Dependabot PRs #1–#5 (incl. Next 16, ESLint 10 majors) parked — decide after demo
+  - OTHER-category and maxRetries paths verified by unit tests only, not browser-driven
+  - shadcn/ui deliberately deferred; ui stubs suffice

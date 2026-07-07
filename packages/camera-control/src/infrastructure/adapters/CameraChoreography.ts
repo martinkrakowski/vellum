@@ -5,8 +5,8 @@ import type CameraControls from "camera-controls";
  * label, angled so the shoulder taper catches the eye on first orbit.
  */
 export const HERO_VIEW = {
-  position: [2.6, 2.2, 3.4] as const,
-  target: [0, 1.15, 0] as const,
+  position: [3.3, 2.5, 4.3] as const,
+  target: [0, 1.3, 0] as const,
 };
 
 /** Slow azimuth advance (rad/s) while a re-generation is in flight. */
