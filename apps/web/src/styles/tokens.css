@@ -29,8 +29,8 @@
 
   /* Typography — geist is the chosen base family; load the actual font
      (next/font or @font-face) and keep this stack as the fallback chain. */
-  --font-sans: geist, system-ui, -apple-system, sans-serif;
-  --font-mono: ui-monospace, "Geist Mono", "SFMono-Regular", monospace;
+  --font-sans: var(--font-geist-sans, geist), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono, "Geist Mono"), ui-monospace, "SFMono-Regular", monospace;
 
   /* Spacing — 4px base unit (mirrors Tailwind's default scale) */
   --space-1: 0.25rem;
