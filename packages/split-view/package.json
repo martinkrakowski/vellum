@@ -15,9 +15,11 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@vellum/shared": "workspace:*"
+    "@vellum/shared": "workspace:*",
+    "react": "^19.0.0"
   },
   "devDependencies": {
+    "@types/react": "^19.0.0",
     "typescript": "^5.0.0",
     "vitest": "^4.1.9"
   }

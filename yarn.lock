@@ -2004,7 +2004,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/camera-control@workspace:packages/camera-control":
+"@vellum/camera-control@workspace:*, @vellum/camera-control@workspace:packages/camera-control":
   version: 0.0.0-use.local
   resolution: "@vellum/camera-control@workspace:packages/camera-control"
   dependencies:
@@ -2038,7 +2038,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/feedback-domain@workspace:packages/feedback-domain":
+"@vellum/feedback-domain@workspace:*, @vellum/feedback-domain@workspace:packages/feedback-domain":
   version: 0.0.0-use.local
   resolution: "@vellum/feedback-domain@workspace:packages/feedback-domain"
   dependencies:
@@ -2067,7 +2067,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@vellum/review-dashboard@workspace:packages/review-dashboard"
   dependencies:
+    "@types/react": "npm:^19.0.0"
+    "@vellum/feedback-domain": "workspace:*"
+    "@vellum/scene-orchestration": "workspace:*"
+    "@vellum/scene-types": "workspace:*"
     "@vellum/shared": "workspace:*"
+    react: "npm:^19.0.0"
     typescript: "npm:^5.0.0"
     vitest: "npm:^4.1.9"
   languageName: unknown
@@ -2109,7 +2114,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/scene-port@workspace:packages/scene-port":
+"@vellum/scene-port@workspace:*, @vellum/scene-port@workspace:packages/scene-port":
   version: 0.0.0-use.local
   resolution: "@vellum/scene-port@workspace:packages/scene-port"
   dependencies:
@@ -2128,7 +2133,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@vellum/scene-renderer@workspace:packages/scene-renderer"
   dependencies:
+    "@react-three/drei": "npm:^10.7.7"
+    "@react-three/fiber": "npm:^9.6.1"
+    "@types/react": "npm:^19.0.0"
+    "@types/three": "npm:^0.185.0"
+    "@vellum/camera-control": "workspace:*"
+    "@vellum/scene-port": "workspace:*"
     "@vellum/shared": "workspace:*"
+    camera-controls: "npm:^3.1.2"
+    react: "npm:^19.0.0"
+    three: "npm:^0.185.1"
     typescript: "npm:^5.0.0"
     vitest: "npm:^4.1.9"
   languageName: unknown
@@ -2158,7 +2172,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@vellum/split-view@workspace:packages/split-view"
   dependencies:
+    "@types/react": "npm:^19.0.0"
     "@vellum/shared": "workspace:*"
+    react: "npm:^19.0.0"
     typescript: "npm:^5.0.0"
     vitest: "npm:^4.1.9"
   languageName: unknown

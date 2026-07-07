@@ -368,6 +368,8 @@ bounded_contexts:
       domain logic directly.
     depends_on:
       - shared
+      - scene-port
+      - camera-control
     uiFramework: Next.js
     apiFramework: Express
     layers:
@@ -417,6 +419,8 @@ bounded_contexts:
       explicit message with a 'Start New Session' CTA.
     depends_on:
       - shared
+      - scene-orchestration
+      - feedback-domain
     uiFramework: Next.js
     apiFramework: Express
     layers:

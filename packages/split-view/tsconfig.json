@@ -8,7 +8,13 @@
     "emitDeclarationOnly": true,
     "declarationMap": true,
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "paths": {}
+    "paths": {},
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "jsx": "react-jsx"
   },
   "references": [
     {
