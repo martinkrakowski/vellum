@@ -26,6 +26,9 @@ coverage/
 !.env.example
 !.env.*.example
 
+# Hexagen sync migration report — regenerated, contains absolute local paths
+SYNC-MIGRATION-REPORT.md
+
 # Logs & OS
 *.log
 .DS_Store

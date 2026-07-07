@@ -50,6 +50,7 @@ export type MachineEvent =
   | { type: "PIPELINE_STEP"; event: PipelineEvent }
   | { type: "GENERATION_SUCCEEDED"; config: SceneConfig; startedAt: string }
   | { type: "DISTORTION_EVALUATED"; report: DistortionReport }
+  | { type: "DISTORTION_FAILED"; message: string }
   | { type: "GENERATION_FAILED"; message: string }
   | { type: "APPROVED"; at: string }
   | { type: "REJECTED"; feedback: FeedbackPayload; at: string }
@@ -129,6 +130,16 @@ export function reviewReducer(
         ],
       };
     }
+
+    case "DISTORTION_FAILED":
+      // The scan runs after GENERATION_SUCCEEDED has already moved us to
+      // reviewing, so its failure must NOT reuse GENERATION_FAILED (which
+      // only fires in generating/regenerating and would be dropped here).
+      // The attempt is genuinely reviewable — the human just loses the
+      // automated guardrail — so we stay in reviewing, keep the ledger
+      // intact, and record why the badge is absent.
+      if (context.state !== "reviewing") return context;
+      return { ...context, distortion: null, error: event.message };
 
     case "GENERATION_FAILED":
       if (context.state !== "generating" && context.state !== "regenerating")

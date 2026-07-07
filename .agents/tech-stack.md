@@ -14,6 +14,10 @@ if it is not here (or is in "Never Suggest"), do not introduce it without asking
 | node:assert / `expect()` | Assertions | `node:assert/strict` or Vitest's `expect()` — either is fine. |
 | Zod           | Schema validation | Env validation today; `scene-types` contracts (schemas + inferred types) from phase 4. |
 | clsx + tailwind-merge | Class composition | Only via the `cn()` helper in `apps/web/src/lib/cn.ts`. |
+| Tailwind CSS  | Styling       | v3, `darkMode: "class"`. Tokens from `DESIGN.md`; no arbitrary values without a design reason. |
+| three.js      | 3D            | The renderer. Confined to renderer/adapter packages — never imported by domain or orchestration. |
+| @react-three/fiber + drei | React renderer for three | Canvas host and helpers (CameraControls, ContactShadows). |
+| camera-controls | Camera        | drei's `CameraControls` wraps it — damped tween/orbit; chosen over OrbitControls for the re-generation reset. |
 
 > Keep this table accurate. When you add a dependency (or a Hexagen template
 > adds one), add its row here in the same change — a stale stack reference is

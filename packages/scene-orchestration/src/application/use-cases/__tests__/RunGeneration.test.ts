@@ -18,6 +18,7 @@ const report = { stretchRatio: 1.1, threshold: 1.3, distortionWarning: false };
 function harness(overrides?: {
   pipelineFails?: boolean;
   configureFails?: boolean;
+  distortionFails?: boolean;
 }) {
   const dispatched: MachineEvent[] = [];
   const deps = {
@@ -36,7 +37,12 @@ function harness(overrides?: {
         if (overrides?.configureFails) throw new Error("webgl lost");
       }),
     },
-    distortion: { evaluate: vi.fn(async () => report) },
+    distortion: {
+      evaluate: vi.fn(async () => {
+        if (overrides?.distortionFails) throw new Error("canvas sample failed");
+        return report;
+      }),
+    },
     dispatch: (event: MachineEvent) => void dispatched.push(event),
     now: () => "2026-07-06T12:00:00.000Z",
   };
@@ -78,5 +84,22 @@ describe("runGeneration", () => {
       message: "webgl lost",
     });
     expect(deps.distortion.evaluate).not.toHaveBeenCalled();
+  });
+
+  it("distortion failure after success is a DISTORTION_FAILED, not a dropped GENERATION_FAILED", async () => {
+    const { deps, dispatched } = harness({ distortionFails: true });
+    await runGeneration(deps, request);
+    // success is announced first (the attempt IS reviewable), then the
+    // scan failure arrives as its own event the reducer handles in reviewing
+    expect(dispatched.map((e) => e.type)).toEqual([
+      "PIPELINE_STEP",
+      "PIPELINE_STEP",
+      "GENERATION_SUCCEEDED",
+      "DISTORTION_FAILED",
+    ]);
+    expect(dispatched.at(-1)).toEqual({
+      type: "DISTORTION_FAILED",
+      message: "canvas sample failed",
+    });
   });
 });

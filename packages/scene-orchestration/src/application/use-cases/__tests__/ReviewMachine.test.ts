@@ -180,6 +180,30 @@ describe("reviewReducer — failure and reset", () => {
     expect(ctx.error).toBe("texture service unreachable");
   });
 
+  it("distortion scan failure keeps the attempt reviewable and records why", () => {
+    const ctx = run([
+      { type: "PROMPT_SUBMITTED", prompt: "p" },
+      { type: "GENERATION_SUCCEEDED", config: config(1), startedAt: T },
+      { type: "DISTORTION_FAILED", message: "canvas sample failed" },
+    ]);
+    // stays reviewing — the human keeps control, just without the guardrail
+    expect(ctx.state).toBe("reviewing");
+    expect(ctx.error).toBe("canvas sample failed");
+    expect(ctx.distortion).toBeNull();
+    expect(ctx.iterations).toHaveLength(1);
+    expect(ctx.iterations[0]?.status).toBe("PENDING");
+  });
+
+  it("a late GENERATION_FAILED in reviewing is still ignored (only DISTORTION_FAILED is honoured there)", () => {
+    const reviewing = run([
+      { type: "PROMPT_SUBMITTED", prompt: "p" },
+      { type: "GENERATION_SUCCEEDED", config: config(1), startedAt: T },
+    ]);
+    expect(reviewReducer(reviewing, { type: "GENERATION_FAILED", message: "x" })).toBe(
+      reviewing,
+    );
+  });
+
   it("reset returns a fresh session from any state", () => {
     const ctx = run([
       { type: "PROMPT_SUBMITTED", prompt: "p" },

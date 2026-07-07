@@ -179,6 +179,14 @@ export function ReviewSession() {
             Generation failed: {context.error}
           </div>
         )}
+        {context.state === "reviewing" && context.error && (
+          // The attempt is still reviewable; the distortion scan just
+          // couldn't run, so we say so instead of showing a stale badge.
+          <div role="status" className="rounded-md border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-text-primary">
+            Distortion scan unavailable ({context.error}) — review the
+            geometry manually before approving.
+          </div>
+        )}
         <div className="min-h-0 flex-1">
           <SplitView
             flat={
