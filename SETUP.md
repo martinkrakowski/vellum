@@ -1,70 +1,73 @@
 # Setup Guide
 
-First-day guide for getting this project running. Framework: **nitro**.
+First-day guide for getting this project running.
+
+## Topology
+
+Yarn 4 workspaces monorepo, orchestrated by Turborepo:
+
+- `apps/web` — **Next.js 15** (App Router). The demo surface: 3D review
+  viewport, split view, review dashboard.
+- `apps/api` — **Nitro**. Reserved seam for future server work; not used by
+  the v1 demo.
+- `packages/*` — hexagonal bounded contexts (`@vellum/*`), consumed **from
+  TypeScript source** (exports point at `src/index.ts`; `apps/web` transpiles
+  them via `transpilePackages`). No package emits runtime JS.
 
 ## Prerequisites
 
-- Node.js 20+ and a package manager (npm, yarn, or pnpm — commands below use npm).
-- `tsx` available to run the TypeScript check script (it ships as a dev
-  dependency in most setups; otherwise `npm install -D tsx`).
+- Node.js 20+ (Corepack enabled — the repo pins `yarn@4.12.0`).
+- `tsx` to run the env check script (`yarn dlx tsx` works without installing).
 
 ## First-Time Setup
 
-1. Make sure secrets can't be committed — append the secret-ignore rules to your
-   `.gitignore` (keep `.gitignore.hexagen` as the committed reference):
+1. Install dependencies:
    ```bash
-   cat .gitignore.hexagen >> .gitignore
+   yarn install
    ```
-2. Copy the env reference and fill in your values:
+2. Copy the env reference and fill in your values (all optional for the
+   mocked v1 demo):
    ```bash
    cp .env.example .env.local
    ```
-3. Set every variable annotated `# required` (in `.env.example` and in any
-   `.env.<template>.example` file). Plain empty values are optional placeholders.
-4. Install dependencies:
+3. Validate, build, and start:
    ```bash
-   npm install
-   ```
-5. Register the env check (one-time) by adding this script to `package.json`:
-   ```json
-   "check:env": "tsx scripts/check-env.ts"
-   ```
-6. Validate your environment, then start the app:
-   ```bash
-   npm run check:env
-   npm run dev
+   yarn dlx tsx scripts/check-env.ts
+   yarn build
+   yarn dev
    ```
 
-Run `npm run check:env` before every demo, CI run, or deploy — it fails with a
-clear list of any missing required variables.
+## Commands
+
+| Command          | What it does                                        |
+| ---------------- | --------------------------------------------------- |
+| `yarn build`     | Turbo build across all workspaces                   |
+| `yarn dev`       | Dev servers (Next.js on web, Nitro on api)          |
+| `yarn typecheck` | `tsc --noEmit` everywhere                           |
+| `yarn lint`      | ESLint everywhere                                   |
+| `yarn test`      | Vitest everywhere                                   |
+| `yarn lint:arch` | Hexagonal layer/import rules (`hexagen arch validate`) |
+| `yarn sync:check`| Verify generated scaffolding is in sync             |
 
 ## How Environment Validation Works
 
 - `.env.example` is the committed reference; `.env.local` holds your real
   values and is gitignored.
-- `src/config/env.server.ts` validates server-only vars with Zod at startup.
-  With strict validation on, a missing/invalid var throws immediately with a
-  readable message; with it off, it logs a warning and uses defaults.
-- `src/config/env.client.ts` validates the public `NEXT_PUBLIC_*` vars. Never
-  put a secret in a `NEXT_PUBLIC_` variable — it is shipped to the browser.
-- Import typed env via `src/config/env.ts` (`serverEnv` on the server,
-  `clientEnv` in the browser).
-- **Loading `.env` files:** Next.js and Nitro do this natively. If you chose the
-  `dotenv` or `dotenv-expand` loader, a `src/config/load-env.ts` is generated —
-  `npm install dotenv` (plus `dotenv-expand` for that option) and `import
-  "./config/load-env"` as the very first line of your entrypoint.
-
-## Adding More Variables
-
-Each Hexagen template you install extends this base: it appends its variables to
-`.env.example` and its own setup notes. After installing a template, re-run
-`cp`-merge any new keys into `.env.local` and `npm run check:env` again.
+- `apps/web/src/config/env.server.ts` validates server-only vars with Zod at
+  startup. With strict validation on, a missing/invalid var throws immediately
+  with a readable message; with it off, it logs a warning and uses defaults.
+- `apps/web/src/config/env.client.ts` validates the public `NEXT_PUBLIC_*`
+  vars. Never put a secret in a `NEXT_PUBLIC_` variable — it is shipped to the
+  browser.
+- Import typed env via `apps/web/src/config/env.ts` (`serverEnv` on the
+  server, `clientEnv` in the browser).
+- Next.js loads `.env*` files natively — no loader import needed.
 
 ## Common Issues
 
-| Symptom                              | Cause                                  | Fix                                           |
-| ------------------------------------ | -------------------------------------- | --------------------------------------------- |
-| Startup throws "validation failed"   | A required var is missing in env       | Read the listed keys; set them in `.env.local` |
-| A `NEXT_PUBLIC_` value is undefined  | Set after build, or not prefixed       | Prefix with `NEXT_PUBLIC_` and rebuild         |
-| A secret leaked to the browser       | Secret was given a `NEXT_PUBLIC_` name | Rename without the prefix; keep it server-only  |
-| `check:env` passes but app still 500s | Var present but wrong value/format     | Check the Zod schema in `src/config/env.server.ts` |
+| Symptom                               | Cause                                  | Fix                                                |
+| ------------------------------------- | -------------------------------------- | -------------------------------------------------- |
+| Startup throws "validation failed"    | A required var is missing in env       | Read the listed keys; set them in `.env.local`     |
+| A `NEXT_PUBLIC_` value is undefined   | Set after build, or not prefixed       | Prefix with `NEXT_PUBLIC_` and rebuild             |
+| A secret leaked to the browser        | Secret was given a `NEXT_PUBLIC_` name | Rename without the prefix; keep it server-only     |
+| Env check passes but app still errors | Var present but wrong value/format     | Check the Zod schema in `apps/web/src/config/env.server.ts` |
