@@ -4,6 +4,11 @@
 global_whitelist:
   - "@vellum/shared"
   - "@vellum/shared/**"
+  # scene-types is the contracts kernel — the manifest permits importing it
+  # in any plane without restriction (schemas + inferred types, no runtime
+  # logic beyond zod parsing).
+  - "@vellum/scene-types"
+  - "@vellum/scene-types/**"
 
 test_double_rules:
   allowed_cross_package_imports: true
