@@ -1993,7 +1993,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/audit-governance@workspace:packages/audit-governance":
+"@vellum/audit-governance@workspace:*, @vellum/audit-governance@workspace:packages/audit-governance":
   version: 0.0.0-use.local
   resolution: "@vellum/audit-governance@workspace:packages/audit-governance"
   dependencies:
@@ -2026,7 +2026,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/distortion-detection@workspace:packages/distortion-detection":
+"@vellum/distortion-detection@workspace:*, @vellum/distortion-detection@workspace:packages/distortion-detection":
   version: 0.0.0-use.local
   resolution: "@vellum/distortion-detection@workspace:packages/distortion-detection"
   dependencies:
@@ -2049,7 +2049,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/pipeline-simulation@workspace:packages/pipeline-simulation":
+"@vellum/pipeline-simulation@workspace:*, @vellum/pipeline-simulation@workspace:packages/pipeline-simulation":
   version: 0.0.0-use.local
   resolution: "@vellum/pipeline-simulation@workspace:packages/pipeline-simulation"
   dependencies:
@@ -2063,7 +2063,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/review-dashboard@workspace:packages/review-dashboard":
+"@vellum/review-dashboard@workspace:*, @vellum/review-dashboard@workspace:packages/review-dashboard":
   version: 0.0.0-use.local
   resolution: "@vellum/review-dashboard@workspace:packages/review-dashboard"
   dependencies:
@@ -2089,7 +2089,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/scene-export@workspace:packages/scene-export":
+"@vellum/scene-export@workspace:*, @vellum/scene-export@workspace:packages/scene-export":
   version: 0.0.0-use.local
   resolution: "@vellum/scene-export@workspace:packages/scene-export"
   dependencies:
@@ -2129,7 +2129,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/scene-renderer@workspace:packages/scene-renderer":
+"@vellum/scene-renderer@workspace:*, @vellum/scene-renderer@workspace:packages/scene-renderer":
   version: 0.0.0-use.local
   resolution: "@vellum/scene-renderer@workspace:packages/scene-renderer"
   dependencies:
@@ -2168,7 +2168,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vellum/split-view@workspace:packages/split-view":
+"@vellum/split-view@workspace:*, @vellum/split-view@workspace:packages/split-view":
   version: 0.0.0-use.local
   resolution: "@vellum/split-view@workspace:packages/split-view"
   dependencies:
@@ -2201,6 +2201,23 @@ __metadata:
     "@types/react": "npm:^19.0.0"
     "@types/react-dom": "npm:^19.0.0"
     "@types/three": "npm:^0.185.0"
+    "@vellum/asset-loader": "workspace:*"
+    "@vellum/audit-governance": "workspace:*"
+    "@vellum/camera-control": "workspace:*"
+    "@vellum/correction-delta": "workspace:*"
+    "@vellum/distortion-detection": "workspace:*"
+    "@vellum/feedback-domain": "workspace:*"
+    "@vellum/pipeline-simulation": "workspace:*"
+    "@vellum/review-dashboard": "workspace:*"
+    "@vellum/review-lifecycle": "workspace:*"
+    "@vellum/scene-export": "workspace:*"
+    "@vellum/scene-orchestration": "workspace:*"
+    "@vellum/scene-port": "workspace:*"
+    "@vellum/scene-renderer": "workspace:*"
+    "@vellum/scene-types": "workspace:*"
+    "@vellum/shared": "workspace:*"
+    "@vellum/split-view": "workspace:*"
+    "@vellum/texture-generation": "workspace:*"
     autoprefixer: "npm:^10.5.2"
     camera-controls: "npm:^3.1.2"
     clsx: "npm:^2.1.1"
