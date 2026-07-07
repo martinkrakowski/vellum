@@ -15,7 +15,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@vellum/shared": "workspace:*"
+    "@vellum/shared": "workspace:*",
+    "camera-controls": "^3.1.2"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

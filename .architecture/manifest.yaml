@@ -185,6 +185,7 @@ bounded_contexts:
       without knowing anything about R3F or Next.js.
     depends_on:
       - shared
+      - review-lifecycle
     uiFramework: Next.js
     apiFramework: Express
     layers:
@@ -197,7 +198,9 @@ bounded_contexts:
         ports:
           in: []
           out:
-            - document-db.out-port.ts
+            - scene.out-port.ts
+            - pipeline.out-port.ts
+            - distortion.out-port.ts
       infrastructure:
         adapters: []
   - name: review-lifecycle
@@ -221,8 +224,7 @@ bounded_contexts:
         use_cases: []
         ports:
           in: []
-          out:
-            - relational-db.out-port.ts
+          out: []
       infrastructure:
         adapters: []
   - name: feedback-domain
@@ -271,8 +273,7 @@ bounded_contexts:
         use_cases: []
         ports:
           in: []
-          out:
-            - relational-db.out-port.ts
+          out: []
       infrastructure:
         adapters: []
   - name: pipeline-simulation
@@ -286,6 +287,9 @@ bounded_contexts:
       testing the state machine without a live R3F canvas.
     depends_on:
       - shared
+      - scene-orchestration
+      - correction-delta
+      - texture-generation
     uiFramework: Next.js
     apiFramework: Express
     layers:
@@ -336,6 +340,7 @@ bounded_contexts:
       make.
     depends_on:
       - shared
+      - scene-orchestration
     uiFramework: Next.js
     apiFramework: Express
     layers:
@@ -347,8 +352,7 @@ bounded_contexts:
         use_cases: []
         ports:
           in: []
-          out:
-            - external-service-client.out-port.ts
+          out: []
       infrastructure:
         adapters: []
   - name: scene-renderer
@@ -363,6 +367,8 @@ bounded_contexts:
       domain logic directly.
     depends_on:
       - shared
+      - scene-port
+      - camera-control
     uiFramework: Next.js
     apiFramework: Express
     layers:
@@ -412,6 +418,8 @@ bounded_contexts:
       explicit message with a 'Start New Session' CTA.
     depends_on:
       - shared
+      - scene-orchestration
+      - feedback-domain
     uiFramework: Next.js
     apiFramework: Express
     layers:
@@ -465,6 +473,8 @@ bounded_contexts:
       component tree.
     depends_on:
       - shared
+      - scene-orchestration
+      - asset-loader
     uiFramework: Next.js
     apiFramework: Express
     layers:
@@ -476,8 +486,7 @@ bounded_contexts:
         use_cases: []
         ports:
           in: []
-          out:
-            - external-service-client.out-port.ts
+          out: []
       infrastructure:
         adapters: []
   - name: asset-loader
@@ -503,8 +512,7 @@ bounded_contexts:
         use_cases: []
         ports:
           in: []
-          out:
-            - external-service-client.out-port.ts
+          out: []
       infrastructure:
         adapters: []
   - name: scene-export
@@ -530,7 +538,6 @@ bounded_contexts:
         use_cases: []
         ports:
           in: []
-          out:
-            - external-service-client.out-port.ts
+          out: []
       infrastructure:
         adapters: []

@@ -15,9 +15,12 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@vellum/shared": "workspace:*"
+    "@vellum/scene-types": "workspace:*",
+    "@vellum/shared": "workspace:*",
+    "three": "^0.185.1"
   },
   "devDependencies": {
+    "@types/three": "^0.185.0",
     "typescript": "^5.0.0",
     "vitest": "^4.1.9"
   }

@@ -8,12 +8,12 @@ shared_kernel:
 layers:
   domain:
     access_rule: "internal-only"
-    allowed_imports: ["@vellum/shared"]
+    allowed_imports: ["@vellum/shared", "@vellum/scene-types"]
 
   application:
     access_rule: "ports-only"
-    allowed_imports: ["domain", "@vellum/shared"]
+    allowed_imports: ["domain", "@vellum/shared", "@vellum/scene-types"]
 
   infrastructure:
     access_rule: "adapters"
-    allowed_imports: ["domain", "application", "@vellum/shared"]
+    allowed_imports: ["domain", "application", "@vellum/shared", "@vellum/scene-types"]

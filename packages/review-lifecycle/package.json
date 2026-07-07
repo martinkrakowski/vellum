@@ -15,6 +15,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@vellum/scene-types": "workspace:*",
     "@vellum/shared": "workspace:*"
   },
   "devDependencies": {

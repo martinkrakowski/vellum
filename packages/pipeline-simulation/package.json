@@ -15,7 +15,11 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@vellum/shared": "workspace:*"
+    "@vellum/correction-delta": "workspace:*",
+    "@vellum/scene-orchestration": "workspace:*",
+    "@vellum/scene-types": "workspace:*",
+    "@vellum/shared": "workspace:*",
+    "@vellum/texture-generation": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

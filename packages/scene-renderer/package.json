@@ -15,9 +15,18 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@vellum/shared": "workspace:*"
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@vellum/camera-control": "workspace:*",
+    "@vellum/scene-port": "workspace:*",
+    "@vellum/shared": "workspace:*",
+    "camera-controls": "^3.1.2",
+    "react": "^19.0.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/three": "^0.185.0",
     "typescript": "^5.0.0",
     "vitest": "^4.1.9"
   }
