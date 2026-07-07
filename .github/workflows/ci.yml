@@ -33,22 +33,19 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Corepack MUST be enabled before setup-node: setup-node@v5 auto-detects
+      # the lockfile and probes the cache with the runner's global Yarn
+      # (Classic 1.22), which hard-errors on a packageManager-pinned yarn@4
+      # project. package-manager-cache:false disables that probe outright —
+      # the Turbo cache below covers task outputs. (sync-integrity.yml uses
+      # the same ordering and was the only green workflow before this fix.)
+      - name: Enable Corepack
+        run: corepack enable
+
       - uses: actions/setup-node@v5
         with:
           node-version: "22"
-          # No `cache: yarn` here. setup-node's yarn cache runs the runner's
-          # global Yarn (Classic 1.22) to locate the store — BEFORE the Corepack
-          # steps below activate the pinned yarn@4 — so it fails on a
-          # packageManager-pinned project. Committing yarn.lock does NOT make it
-          # safe: the hazard is ordering, not the lockfile. To cache, add a
-          # separate actions/cache step AFTER Corepack instead. The Turbo cache
-          # below already covers task outputs.
-
-      # Corepack activates the package manager pinned in package.json
-      # (`packageManager`). Without it, the runner's default Yarn (Classic)
-      # can't honor a Yarn-4 project. See SETUP.md.
-      - name: Enable Corepack
-        run: corepack enable
+          package-manager-cache: false
 
       # Read the pinned version from package.json's `packageManager` at runtime
       # so CI can never drift from what the project declares (no baked version).
@@ -56,11 +53,10 @@ jobs:
         run: |
           corepack prepare "$(node -p 'require("./package.json").packageManager')" --activate
 
-      # First run has no committed lockfile, so install is NOT immutable.
-      # After you commit yarn.lock, switch this to `yarn install --immutable`
-      # (npm: `npm ci`; pnpm: `pnpm install --frozen-lockfile`). See SETUP.md.
+      # yarn.lock is committed, so the install is immutable: CI fails loudly
+      # if the lockfile and manifests drift instead of silently resolving.
       - name: Install dependencies
-        run: "yarn install"
+        run: "yarn install --immutable"
 
       # Turbo caches task outputs keyed by input hash, so unchanged packages are
       # skipped on warm runs (cache_strategy = turbo-cache). Set TURBO_TOKEN
