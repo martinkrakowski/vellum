@@ -17,7 +17,7 @@ Yarn 4 workspaces monorepo, orchestrated by Turborepo:
 ## Prerequisites
 
 - Node.js 20+ (Corepack enabled — the repo pins `yarn@4.12.0`).
-- `tsx` to run the env check script (`yarn dlx tsx` works without installing).
+- Nothing else — the env check runs via the repo's own `tsx` dev dependency.
 
 ## First-Time Setup
 
@@ -32,7 +32,7 @@ Yarn 4 workspaces monorepo, orchestrated by Turborepo:
    ```
 3. Validate, build, and start:
    ```bash
-   yarn dlx tsx scripts/check-env.ts
+   yarn check:env
    yarn build
    yarn dev
    ```
@@ -42,6 +42,7 @@ Yarn 4 workspaces monorepo, orchestrated by Turborepo:
 | Command          | What it does                                        |
 | ---------------- | --------------------------------------------------- |
 | `yarn build`     | Turbo build across all workspaces                   |
+| `yarn check:env` | Env preflight (fails listing missing required vars) |
 | `yarn dev`       | Dev servers (Next.js on web, Nitro on api)          |
 | `yarn typecheck` | `tsc --noEmit` everywhere                           |
 | `yarn lint`      | ESLint everywhere                                   |
@@ -59,8 +60,11 @@ Yarn 4 workspaces monorepo, orchestrated by Turborepo:
 - `apps/web/src/config/env.client.ts` validates the public `NEXT_PUBLIC_*`
   vars. Never put a secret in a `NEXT_PUBLIC_` variable — it is shipped to the
   browser.
-- Import typed env via `apps/web/src/config/env.ts` (`serverEnv` on the
-  server, `clientEnv` in the browser).
+- Import **types** from `apps/web/src/config/env.ts` (a types-only barrel —
+  it deliberately exports no runtime values, so server-only validation can
+  never leak into a client bundle). Import **runtime** values from
+  `apps/web/src/config/env.server.ts` (`serverEnv`) and
+  `apps/web/src/config/env.client.ts` (`clientEnv`).
 - Next.js loads `.env*` files natively — no loader import needed.
 
 ## Common Issues

@@ -5,6 +5,7 @@ node_modules/
 .pnp.*
 
 # Build output
+*.tsbuildinfo
 dist/
 .turbo/
 .next/
@@ -24,6 +25,9 @@ coverage/
 .env.*
 !.env.example
 !.env.*.example
+
+# Hexagen sync migration report — regenerated, contains absolute local paths
+SYNC-MIGRATION-REPORT.md
 
 # Logs & OS
 *.log

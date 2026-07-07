@@ -41,12 +41,20 @@ export function captureCanvasPng(
   );
 }
 
-/** Browser download helper — object URL revoked after the click. */
+/**
+ * Browser download helper. The anchor is attached to the document before
+ * clicking (Firefox ignores clicks on detached anchors) and the object URL
+ * is revoked on the next tick, not synchronously: some browsers start the
+ * download asynchronously after the click handler returns, and revoking too
+ * early truncates larger blobs like the GLB export.
+ */
 export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = filename;
+  document.body.appendChild(anchor);
   anchor.click();
-  URL.revokeObjectURL(url);
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
