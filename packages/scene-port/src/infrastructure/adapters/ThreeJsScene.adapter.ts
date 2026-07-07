@@ -105,4 +105,13 @@ export class ThreeJsSceneAdapter implements ScenePort {
   exportRefs(): SceneRefs | null {
     return this.refs;
   }
+
+  /**
+   * What the GLB export serialises: the product only. Exporting the whole
+   * scene would drag in helper textures (e.g. contact-shadow render
+   * targets) that GLTFExporter cannot process.
+   */
+  exportTarget(): THREE.Object3D | null {
+    return this.bottle?.group ?? null;
+  }
 }

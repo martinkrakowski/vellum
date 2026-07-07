@@ -16,10 +16,10 @@ export function exportAuditTrailJson(trail: AuditTrail): Blob {
 }
 
 export async function exportSceneGlb(
-  scene: THREE.Scene,
+  target: THREE.Object3D,
   renderer: THREE.WebGLRenderer,
 ): Promise<Blob> {
-  scene.traverse((object) => {
+  target.traverse((object) => {
     const material = (object as THREE.Mesh).material as
       | THREE.MeshStandardMaterial
       | undefined;
@@ -27,7 +27,7 @@ export async function exportSceneGlb(
   });
   await new Promise((resolve) => requestAnimationFrame(resolve));
 
-  const buffer = await new GLTFExporter().parseAsync(scene, { binary: true });
+  const buffer = await new GLTFExporter().parseAsync(target, { binary: true });
   if (!(buffer instanceof ArrayBuffer))
     throw new Error("GLTFExporter did not produce a binary GLB");
   return new Blob([buffer], { type: "model/gltf-binary" });

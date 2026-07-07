@@ -123,8 +123,9 @@ export function ReviewSession() {
 
   const exportGlb = async () => {
     const refs = scene.exportRefs();
-    if (!refs) return;
-    const blob = await exportSceneGlb(refs.scene, refs.renderer);
+    const target = scene.exportTarget();
+    if (!refs || !target) return;
+    const blob = await exportSceneGlb(target, refs.renderer);
     downloadBlob(blob, `${context.sessionId}.glb`);
   };
 
