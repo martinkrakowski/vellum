@@ -340,6 +340,7 @@ bounded_contexts:
       make.
     depends_on:
       - shared
+      - scene-orchestration
     uiFramework: Next.js
     apiFramework: Express
     layers:

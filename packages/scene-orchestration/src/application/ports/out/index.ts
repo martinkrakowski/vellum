@@ -3,4 +3,3 @@
 export * from "./Distortion.out-port.js";
 export * from "./Pipeline.out-port.js";
 export * from "./Scene.out-port.js";
-export * from "./DocumentDb.out-port.js";
