@@ -5,6 +5,7 @@ node_modules/
 .pnp.*
 
 # Build output
+*.tsbuildinfo
 dist/
 .turbo/
 .next/
