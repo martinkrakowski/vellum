@@ -87,6 +87,7 @@ apps:
     framework: next.js
     depends_on: &ref_0
       - asset-loader
+      - ui
       - audit-governance
       - camera-control
       - correction-delta
@@ -106,6 +107,27 @@ apps:
     framework: nitro
     depends_on: *ref_0
 bounded_contexts:
+  - name: ui
+    type: shared-kernel
+    description: >-
+      Design-system foundation (tokens, theme, cn) and reusable presentational
+      React components. A pure UI leaf — depends on nothing internal; consumed
+      by apps and UI-bearing packages.
+    depends_on: []
+    uiFramework: Next.js
+    apiFramework: Express
+    layers:
+      domain:
+        entities: []
+        value_objects: []
+        domain_services: []
+      application:
+        use_cases: []
+        ports:
+          in: []
+          out: []
+      infrastructure:
+        adapters: []
   - name: shared
     type: shared-kernel
     description: Shared primitives, custom errors, base classes, utilities
