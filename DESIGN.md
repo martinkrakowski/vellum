@@ -5,10 +5,13 @@
 > token, update the relevant row here in the same commit. AI agents treat this
 > as an immutable anchor — deviations require an explicit, justified edit.
 
-The CSS custom properties in `src/styles/tokens.css` implement this contract and
-are the single source of truth. `src/styles/theme.ts` mirrors them as
-`var(--token)` references for TypeScript. Tailwind (`tailwind.config.ts`)
-*extends* the default palette with these tokens — it never replaces it.
+The CSS custom properties in `packages/ui/src/styles/tokens.css` implement this
+contract and are the single source of truth (the design system lives in the
+shared `@vellum/ui` package; the app imports the tokens via
+`@import "@vellum/ui/styles/tokens.css"`). `packages/ui/src/styles/theme.ts`
+mirrors them as `var(--token)` references for TypeScript. Tailwind
+(`apps/web/tailwind.config.ts`) *extends* the default palette with these tokens
+— it never replaces it.
 
 ---
 
@@ -53,7 +56,7 @@ delete the `.dark` block.
 ## Component Base
 
 Components are built on: **shadcn-ui**. The generated stubs in
-`src/components/ui/` are framework-agnostic React (props + `cn()` + a11y) so they
+`packages/ui/src/components/` are framework-agnostic React (props + `cn()` + a11y) so they
 work regardless; install the matching library if you chose one (e.g. shadcn-ui /
 Radix primitives / Headless UI) and grow the stubs toward its patterns.
 

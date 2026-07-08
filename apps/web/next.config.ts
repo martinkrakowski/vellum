@@ -22,6 +22,7 @@ const nextConfig: NextConfig = {
     "@vellum/shared",
     "@vellum/split-view",
     "@vellum/texture-generation",
+    "@vellum/ui",
   ],
   // Package sources use ESM-style ".js" specifiers that resolve to ".ts"
   // files (NodeNext convention, emitted by hexagen). Vitest/Vite resolve

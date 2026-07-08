@@ -5,7 +5,7 @@
  * layers, then a minimal base reset that consumes the tokens.
  */
 
-@import "./tokens.css";
+@import "@vellum/ui/styles/tokens.css";
 
 @tailwind base;
 @tailwind components;
