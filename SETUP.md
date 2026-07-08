@@ -6,10 +6,11 @@ First-day guide for getting this project running.
 
 Yarn 4 workspaces monorepo, orchestrated by Turborepo:
 
-- `apps/web` — **Next.js 15** (App Router). The demo surface: 3D review
-  viewport, split view, review dashboard.
-- `apps/api` — **Nitro**. Reserved seam for future server work; not used by
-  the v1 demo.
+- `apps/web` — **Next.js 15** (App Router) on **:3000**. The demo surface: 3D
+  review viewport, split view, review dashboard.
+- `apps/api` — **Nitro** on **:3001**. Reserved seam for future server work;
+  not used by the v1 demo. (Both default to 3000 otherwise; the `dev` scripts
+  pin distinct ports so `yarn dev` doesn't race for one.)
 - `packages/*` — hexagonal bounded contexts (`@vellum/*`), consumed **from
   TypeScript source** (exports point at `src/index.ts`; `apps/web` transpiles
   them via `transpilePackages`). No package emits runtime JS.
@@ -43,7 +44,7 @@ Yarn 4 workspaces monorepo, orchestrated by Turborepo:
 | ---------------- | --------------------------------------------------- |
 | `yarn build`     | Turbo build across all workspaces                   |
 | `yarn check:env` | Env preflight (fails listing missing required vars) |
-| `yarn dev`       | Dev servers (Next.js on web, Nitro on api)          |
+| `yarn dev`       | Dev servers — web on :3000, api on :3001             |
 | `yarn typecheck` | `tsc --noEmit` everywhere                           |
 | `yarn lint`      | ESLint everywhere                                   |
 | `yarn test`      | Vitest everywhere                                   |
