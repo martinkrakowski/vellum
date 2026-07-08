@@ -17,7 +17,9 @@ export const theme = {
     surface: {
       background: "var(--color-background)",
       surface: "var(--color-surface)",
+      surface2: "var(--color-surface-2)",
       border: "var(--color-border)",
+      borderHover: "var(--color-border-hover)",
     },
     text: {
       primary: "var(--color-text-primary)",
@@ -45,6 +47,7 @@ export const theme = {
     sm: "var(--shadow-sm)",
     md: "var(--shadow-md)",
     lg: "var(--shadow-lg)",
+    "2xl": "var(--shadow-2xl)",
   },
   duration: {
     fast: "var(--duration-fast)",

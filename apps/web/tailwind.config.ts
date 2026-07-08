@@ -26,7 +26,9 @@ const config: Config = {
         },
         background: "var(--color-background)",
         surface: "var(--color-surface)",
+        "surface-2": "var(--color-surface-2)",
         border: "var(--color-border)",
+        "border-hover": "var(--color-border-hover)",
         "text-primary": "var(--color-text-primary)",
         "text-secondary": "var(--color-text-secondary)",
         "text-muted": "var(--color-text-muted)",
@@ -48,6 +50,7 @@ const config: Config = {
         sm: "var(--shadow-sm)",
         md: "var(--shadow-md)",
         lg: "var(--shadow-lg)",
+        "2xl": "var(--shadow-2xl)",
       },
       transitionDuration: {
         fast: "var(--duration-fast)",
