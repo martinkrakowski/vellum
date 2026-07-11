@@ -324,9 +324,7 @@ bounded_contexts:
       application:
         use_cases: []
         ports:
-          in:
-            - texturegeneration.in-port.ts
-            - imagetexturegenerator.in-port.ts
+          in: []
           out: []
       infrastructure:
         adapters: []
