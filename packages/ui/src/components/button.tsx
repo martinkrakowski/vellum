@@ -37,11 +37,15 @@ export function Button(props: ButtonProps): ReactNode {
     className,
     children,
     disabled,
+    type,
     ...rest
   } = props;
 
   return (
     <button
+      // Default to "button" — an unset type is "submit", which silently
+      // submits any enclosing form. Callers opt into submit explicitly.
+      type={type ?? "button"}
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
@@ -54,8 +58,15 @@ export function Button(props: ButtonProps): ReactNode {
       aria-busy={isLoading || undefined}
       {...rest}
     >
-      {isLoading ? <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" /> : null}
-      {isLoading ? null : children}
+      {isLoading ? (
+        <span
+          aria-hidden
+          className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+        />
+      ) : null}
+      {/* Keep children mounted while loading so the accessible name (often only
+          in children) survives; the spinner sits alongside. */}
+      {children}
     </button>
   );
 }
