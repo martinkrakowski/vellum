@@ -18,6 +18,7 @@ if it is not here (or is in "Never Suggest"), do not introduce it without asking
 | three.js      | 3D            | The renderer. Confined to renderer/adapter packages — never imported by domain or orchestration. |
 | @react-three/fiber + drei | React renderer for three | Canvas host and helpers (CameraControls, ContactShadows). |
 | camera-controls | Camera        | drei's `CameraControls` wraps it — damped tween/orbit; chosen over OrbitControls for the re-generation reset. |
+| @google/genai | Image generation | Google Imagen adapter. **Server-only** (`apps/api`) — never in the web bundle. Behind `ImageTextureGeneratorPort`; one tier of the Firefly→Imagen→OpenRouter→procedural chain. |
 
 > Keep this table accurate. When you add a dependency (or a Hexagen template
 > adds one), add its row here in the same change — a stale stack reference is
