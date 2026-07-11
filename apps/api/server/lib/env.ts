@@ -1,6 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
+import { envValue } from "./util.js";
+
 /** Apply KEY=VALUE lines from a file without overriding vars already set. */
 function applyEnvFile(path: string): void {
   if (!existsSync(path)) return;
@@ -44,13 +46,13 @@ export function loadEnv(): void {
   // a dev server started before keys were added) is then self-evident in the
   // logs instead of silently producing the static floor.
   const providers: string[] = [];
-  if (process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY) {
-    const keyName = process.env.GEMINI_API_KEY ? "GEMINI_API_KEY" : "GOOGLE_API_KEY";
+  if (envValue("GEMINI_API_KEY") ?? envValue("GOOGLE_API_KEY")) {
+    const keyName = envValue("GEMINI_API_KEY") ? "GEMINI_API_KEY" : "GOOGLE_API_KEY";
     providers.push(`imagen (${keyName})`);
   }
-  if (process.env.OPENROUTER_API_KEY) providers.push("openrouter (OPENROUTER_API_KEY)");
-  const fireflyId = process.env.FIREFLY_CLIENT_ID;
-  const fireflySecret = process.env.FIREFLY_CLIENT_SECRET;
+  if (envValue("OPENROUTER_API_KEY")) providers.push("openrouter (OPENROUTER_API_KEY)");
+  const fireflyId = envValue("FIREFLY_CLIENT_ID");
+  const fireflySecret = envValue("FIREFLY_CLIENT_SECRET");
   if (fireflyId && fireflySecret) {
     providers.push("firefly (FIREFLY_CLIENT_ID/SECRET)");
   } else if (fireflyId || fireflySecret) {

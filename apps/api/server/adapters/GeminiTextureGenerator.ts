@@ -6,6 +6,7 @@ import type {
 } from "@vellum/texture-generation";
 
 import { buildLabelPrompt } from "../lib/prompt.js";
+import { GENERATION_TIMEOUT_MS, withTimeout } from "../lib/util.js";
 
 /** Default Imagen model (override with the IMAGEN_MODEL env var). */
 const DEFAULT_MODEL = "imagen-4.0-generate-001";
@@ -50,11 +51,17 @@ export class GeminiTextureGenerator implements ImageTextureGeneratorPort {
 
   async generate(request: TextureRequest): Promise<TextureResult> {
     try {
-      const response = await this.ai.models.generateImages({
-        model: this.model,
-        prompt: buildLabelPrompt(request.prompt),
-        config: { numberOfImages: 1, aspectRatio: "1:1" },
-      });
+      // The SDK exposes no abort signal, so race it against a deadline — a
+      // stalled provider must fail fast into the fallback, not hang the request.
+      const response = await withTimeout(
+        this.ai.models.generateImages({
+          model: this.model,
+          prompt: buildLabelPrompt(request.prompt),
+          config: { numberOfImages: 1, aspectRatio: "1:1" },
+        }),
+        GENERATION_TIMEOUT_MS,
+        "Imagen generate",
+      );
       const bytes = response.generatedImages?.[0]?.image?.imageBytes;
       if (!bytes) throw new Error("Imagen returned no image data");
       return { url: `data:image/png;base64,${bytes}`, source: "imagen" };

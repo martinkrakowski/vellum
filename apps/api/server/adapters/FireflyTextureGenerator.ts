@@ -5,6 +5,7 @@ import type {
 } from "@vellum/texture-generation";
 
 import { buildLabelPrompt } from "../lib/prompt.js";
+import { deadline, GENERATION_TIMEOUT_MS, SHORT_TIMEOUT_MS } from "../lib/util.js";
 
 /** Adobe IMS token endpoint (server-to-server client-credentials flow). */
 const IMS_TOKEN_ENDPOINT = "https://ims-na1.adobelogin.com/ims/token/v3";
@@ -95,6 +96,7 @@ export class FireflyTextureGenerator implements ImageTextureGeneratorPort {
     const response = await fetch(IMS_TOKEN_ENDPOINT, {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
+      signal: deadline(SHORT_TIMEOUT_MS),
       body: new URLSearchParams({
         grant_type: "client_credentials",
         client_id: this.clientId,
@@ -123,6 +125,7 @@ export class FireflyTextureGenerator implements ImageTextureGeneratorPort {
         "x-api-key": this.clientId,
         "content-type": "application/json",
       },
+      signal: deadline(GENERATION_TIMEOUT_MS),
       body: JSON.stringify({
         prompt,
         numVariations: 1,
@@ -142,7 +145,7 @@ export class FireflyTextureGenerator implements ImageTextureGeneratorPort {
 
   /** Firefly returns a presigned URL; fetch the bytes and encode as a data URL. */
   private async toDataUrl(url: string): Promise<string> {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal: deadline(SHORT_TIMEOUT_MS) });
     if (!response.ok)
       throw new Error(`Firefly image fetch failed (HTTP ${response.status})`);
     const contentType = response.headers.get("content-type") ?? "image/png";

@@ -26,11 +26,17 @@ export interface TextureResult {
 }
 
 /**
- * Outbound seam for label-texture generation. Implemented server-side by real
- * model adapters (Adobe Firefly, Google Imagen, OpenRouter) composed into a
- * key-gated fallback chain over a procedural floor. Async and
- * provenance-carrying — the production successor to the demo-era synchronous
- * `TextureGenerationPort` (which stays for the offline mock path).
+ * The label-texture generation seam. Implemented server-side by real model
+ * adapters (Adobe Firefly, Google Imagen, OpenRouter) composed into a key-gated
+ * fallback chain over a procedural floor. Async and provenance-carrying — the
+ * production successor to the demo-era synchronous `TextureGenerationPort`
+ * (which stays for the offline mock path).
+ *
+ * Placement note: this sits in `ports/in` alongside its sibling
+ * `TextureGenerationPort` for package consistency, though a generator the
+ * application *calls* is really a driven (outbound) port — a package-wide
+ * in→out reclassification of both texture ports is tracked as follow-up rather
+ * than split here.
  */
 export interface ImageTextureGeneratorPort {
   generate(request: TextureRequest): Promise<TextureResult>;

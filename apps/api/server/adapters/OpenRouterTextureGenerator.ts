@@ -5,6 +5,7 @@ import type {
 } from "@vellum/texture-generation";
 
 import { buildLabelPrompt } from "../lib/prompt.js";
+import { deadline, GENERATION_TIMEOUT_MS, SHORT_TIMEOUT_MS } from "../lib/util.js";
 
 const ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 /** A different provider from Imagen by default, so it's a real second source. */
@@ -89,6 +90,7 @@ export class OpenRouterTextureGenerator implements ImageTextureGeneratorPort {
         authorization: `Bearer ${this.apiKey}`,
         "content-type": "application/json",
       },
+      signal: deadline(GENERATION_TIMEOUT_MS),
       body: JSON.stringify({
         model: this.model,
         modalities,
@@ -108,7 +110,7 @@ export class OpenRouterTextureGenerator implements ImageTextureGeneratorPort {
 
   /** Fetch a remote image URL and encode it as a data URL (server-side, no CORS). */
   private async toDataUrl(url: string): Promise<string> {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal: deadline(SHORT_TIMEOUT_MS) });
     if (!response.ok)
       throw new Error(`OpenRouter image fetch failed (HTTP ${response.status})`);
     const contentType = response.headers.get("content-type") ?? "image/png";
