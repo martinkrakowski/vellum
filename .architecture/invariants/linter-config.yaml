@@ -9,6 +9,10 @@ global_whitelist:
   # logic beyond zod parsing).
   - "@vellum/scene-types"
   - "@vellum/scene-types/**"
+  # ui is the design-system leaf — presentational components consumed by apps
+  # and UI-bearing packages; no internal deps of its own.
+  - "@vellum/ui"
+  - "@vellum/ui/**"
 
 test_double_rules:
   allowed_cross_package_imports: true
