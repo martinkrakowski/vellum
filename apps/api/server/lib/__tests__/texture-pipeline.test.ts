@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildTextureGenerator,
+  DEFAULT_OPENROUTER_MODELS,
+  openRouterModels,
   resetTextureGeneratorCache,
 } from "../texture-pipeline.js";
 
@@ -60,7 +62,27 @@ describe("buildTextureGenerator — key-gated fallback chain", () => {
     vi.stubEnv("FIREFLY_CLIENT_SECRET", "secret");
     const a = buildTextureGenerator("firefly");
     const b = buildTextureGenerator("firefly");
-    // Same instance → the Firefly adapter's IMS token cache survives requests.
     expect(a).toBe(b);
+  });
+});
+
+describe("openRouterModels — ordered diffusion fallback list", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("defaults to the built-in spread", () => {
+    vi.stubEnv("OPENROUTER_IMAGE_MODELS", "");
+    vi.stubEnv("OPENROUTER_IMAGE_MODEL", "");
+    expect(openRouterModels()).toEqual([...DEFAULT_OPENROUTER_MODELS]);
+  });
+
+  it("parses a comma-separated OPENROUTER_IMAGE_MODELS list, trimmed", () => {
+    vi.stubEnv("OPENROUTER_IMAGE_MODELS", " a/x , b/y ,, c/z ");
+    expect(openRouterModels()).toEqual(["a/x", "b/y", "c/z"]);
+  });
+
+  it("falls back to the single OPENROUTER_IMAGE_MODEL when the list is unset", () => {
+    vi.stubEnv("OPENROUTER_IMAGE_MODELS", "");
+    vi.stubEnv("OPENROUTER_IMAGE_MODEL", "solo/model");
+    expect(openRouterModels()).toEqual(["solo/model"]);
   });
 });

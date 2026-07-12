@@ -25,6 +25,29 @@ export const ALLOWED_TEXTURE_MODELS: readonly string[] = [
 ];
 
 /**
+ * OpenRouter image models tried in order within the OpenRouter tier — a spread
+ * of diffusion/image providers so one being rate-limited or unavailable falls
+ * through to the next before the procedural floor. Override with
+ * OPENROUTER_IMAGE_MODELS (comma-separated) or OPENROUTER_IMAGE_MODEL (single).
+ */
+export const DEFAULT_OPENROUTER_MODELS: readonly string[] = [
+  "black-forest-labs/flux-1.1-pro",
+  "x-ai/grok-imagine-image-quality",
+  "google/gemini-2.5-flash-image",
+];
+
+/** Resolve the ordered OpenRouter model list from env, or the default spread. */
+export function openRouterModels(): string[] {
+  const list = envValue("OPENROUTER_IMAGE_MODELS")
+    ?.split(",")
+    .map((m) => m.trim())
+    .filter(Boolean);
+  if (list && list.length > 0) return list;
+  const single = envValue("OPENROUTER_IMAGE_MODEL");
+  return single ? [single] : [...DEFAULT_OPENROUTER_MODELS];
+}
+
+/**
  * Compose the texture generator. Each provider is only used when its credentials
  * are present (else it falls through), and every tier degrades to the next, over
  * a procedural floor that never fails — so a keyless run produces the static
@@ -67,13 +90,21 @@ function compose(selected?: string): ImageTextureGeneratorPort {
   const fireflyId = envValue("FIREFLY_CLIENT_ID");
   const fireflySecret = envValue("FIREFLY_CLIENT_SECRET");
 
+  // Chain the OpenRouter models into a fallback ladder over the procedural
+  // floor: models[0] → models[1] → … → procedural. reduceRight folds from the
+  // last model (fallback = procedural) up to the first, so the first is tried
+  // first. A stalled/rate-limited model degrades to the next diffusion model.
   const openRouter = (): ImageTextureGeneratorPort =>
     openRouterKey
-      ? new OpenRouterTextureGenerator({
-          apiKey: openRouterKey,
-          model: envValue("OPENROUTER_IMAGE_MODEL"),
-          fallback: procedural,
-        })
+      ? openRouterModels().reduceRight<ImageTextureGeneratorPort>(
+          (fallback, model) =>
+            new OpenRouterTextureGenerator({
+              apiKey: openRouterKey,
+              model,
+              fallback,
+            }),
+          procedural,
+        )
       : procedural;
 
   const imagen = (): ImageTextureGeneratorPort =>

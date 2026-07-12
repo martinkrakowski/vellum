@@ -8,8 +8,14 @@ import type {
 import { buildLabelPrompt } from "../lib/prompt.js";
 import { deadline, GENERATION_TIMEOUT_MS } from "../lib/util.js";
 
-/** Default Imagen model (override with the IMAGEN_MODEL env var). */
-const DEFAULT_MODEL = "imagen-4.0-generate-001";
+/**
+ * Default Imagen model (override with the IMAGEN_MODEL env var). Uses the
+ * `fast` variant rather than `imagen-4.0-generate-001`, which Google has
+ * scheduled to shut down (2026-08-17) — and `fast` suits the review loop's
+ * latency. Verify against your project's available Imagen models; a wrong/
+ * retired id just degrades this tier to the OpenRouter chain, never hangs.
+ */
+const DEFAULT_MODEL = "imagen-4.0-fast-generate-001";
 
 /** The slice of the `@google/genai` client this adapter actually uses. */
 export interface ImagenClient {
