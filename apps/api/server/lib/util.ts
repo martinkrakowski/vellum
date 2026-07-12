@@ -14,35 +14,12 @@ export function envValue(name: string): string | undefined {
   return trimmed ? trimmed : undefined;
 }
 
-/** An abort signal that fires after `ms` — pass to `fetch` for a hard deadline. */
+/**
+ * An abort signal that fires after `ms` — a hard deadline for a request. Passed
+ * to `fetch` (Firefly, OpenRouter) and to the @google/genai config
+ * (`abortSignal`), so a stalled request is actually cancelled and fails fast
+ * into the fallback chain rather than hanging indefinitely.
+ */
 export function deadline(ms: number): AbortSignal {
   return AbortSignal.timeout(ms);
-}
-
-/**
- * Race a promise against a timeout so a provider SDK call that exposes no abort
- * signal (e.g. @google/genai) can still fail fast into the fallback chain
- * instead of hanging the request indefinitely.
- */
-export function withTimeout<T>(
-  promise: Promise<T>,
-  ms: number,
-  label: string,
-): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error(`${label} timed out after ${ms}ms`)),
-      ms,
-    );
-    promise.then(
-      (value) => {
-        clearTimeout(timer);
-        resolve(value);
-      },
-      (error) => {
-        clearTimeout(timer);
-        reject(error instanceof Error ? error : new Error(String(error)));
-      },
-    );
-  });
 }
