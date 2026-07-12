@@ -9,15 +9,19 @@
     "preview": "node .output/server/index.mjs",
     "prepare": "nitro prepare",
     "lint": "eslint server --ext .ts",
-    "typecheck": "nitro prepare && tsc --noEmit"
+    "typecheck": "nitro prepare && tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@google/genai": "^1.30.0",
+    "@vellum/texture-generation": "workspace:*",
     "nitropack": "^2.13.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
     "eslint": "^9.0.0",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^4.1.9"
   }
 }
