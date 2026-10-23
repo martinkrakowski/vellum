@@ -29,6 +29,48 @@ export interface OpenRouterTextureGeneratorOptions {
 }
 
 /**
+ * An HTTP error response from OpenRouter itself (not a thrown fetch error).
+ * `status` is the HTTP status; `providerMessage` is the envelope's
+ * `error.message` when the body parses as JSON of that shape and the field is a
+ * string, otherwise `undefined`.
+ */
+export class OpenRouterHttpError extends Error {
+  readonly status: number;
+  readonly providerMessage: string | undefined;
+
+  constructor(status: number, bodyText: string) {
+    super(`OpenRouter HTTP ${status}: ${bodyText.slice(0, 200)}`);
+    this.name = "OpenRouterHttpError";
+    this.status = status;
+    this.providerMessage = parseProviderMessage(bodyText);
+  }
+}
+
+/** Never throws; returns the envelope's `error.message`, or undefined. */
+function parseProviderMessage(bodyText: string): string | undefined {
+  try {
+    const parsed: unknown = JSON.parse(bodyText);
+    if (typeof parsed !== "object" || parsed === null) return undefined;
+    const error = (parsed as { error?: unknown }).error;
+    if (typeof error !== "object" || error === null) return undefined;
+    const message = (error as { message?: unknown }).message;
+    return typeof message === "string" ? message : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** True only for OpenRouter's own HTTP 400 that reports a modality mismatch. */
+function isModalityMismatch(error: unknown): boolean {
+  return (
+    error instanceof OpenRouterHttpError &&
+    error.status === 400 &&
+    typeof error.providerMessage === "string" &&
+    /modalit/i.test(error.providerMessage)
+  );
+}
+
+/**
  * OpenRouter's OpenAI-compatible image generation (Grok Imagine, Nano Banana,
  * GPT Image, …) as an ImageTextureGeneratorPort. The second GenAI source: when
  * Imagen is rate-limited/unavailable, the Gemini adapter falls back here before
@@ -50,13 +92,15 @@ export class OpenRouterTextureGenerator implements ImageTextureGeneratorPort {
     const prompt = buildLabelPrompt(request.prompt);
     try {
       // Image-only output (Grok Imagine, Flux, …). Text+image models (Nano
-      // Banana, GPT Image) reject that and need ["image","text"] — so retry once
-      // on the specific modality mismatch rather than requiring per-model config.
+      // Banana, GPT Image) reject that and need ["image","text"] — so retry
+      // once. The retry fires only for OpenRouter's own HTTP 400 that reports a
+      // modality mismatch; a 429, a 5xx, a network or timeout failure, or a
+      // failed image download must never cause a second generation.
       let url: string | undefined;
       try {
         url = await this.request(prompt, ["image"]);
       } catch (error) {
-        if (error instanceof Error && error.message.includes("modalities")) {
+        if (isModalityMismatch(error)) {
           url = await this.request(prompt, ["image", "text"]);
         } else {
           throw error;
@@ -99,9 +143,8 @@ export class OpenRouterTextureGenerator implements ImageTextureGeneratorPort {
       }),
     });
     if (!response.ok) {
-      throw new Error(
-        `OpenRouter HTTP ${response.status}: ${(await response.text()).slice(0, 200)}`,
-      );
+      const bodyText = await response.text();
+      throw new OpenRouterHttpError(response.status, bodyText);
     }
     const body = (await response.json()) as OpenRouterResponse;
     const image = body.choices?.[0]?.message?.images?.[0];
